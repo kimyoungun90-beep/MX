@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#030814">
+  <title>Galaxy 신제품 실시간 재고 현황</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="background-effects" aria-hidden="true">
+    <div class="glow glow-blue"></div>
+    <div class="glow glow-purple"></div>
+    <div class="wave wave-one"></div>
+    <div class="wave wave-two"></div>
+  </div>
+
+  <main id="app" class="dashboard">
+    <header class="topbar">
+      <div id="storeName" class="store-name">코스트코 대구점</div>
+
+      <div class="title-wrap">
+        <div class="eyebrow">Galaxy 신제품</div>
+        <h1>실시간 재고 현황</h1>
+        <div class="title-line"></div>
+      </div>
+
+      <div class="brand-panel">
+        <div class="brand">SAMSUNG</div>
+        <div id="liveBadge" class="live-badge is-live">
+          <span class="live-dot"></span>
+          <span id="liveText">LIVE · 10초 자동 갱신</span>
+        </div>
+      </div>
+    </header>
+
+    <section id="phoneGrid" class="product-grid phone-grid" aria-label="폴더블 스마트폰 재고"></section>
+
+    <section class="watch-section" aria-label="갤럭시 워치 재고">
+      <div class="section-heading">
+        <span>Galaxy Watch</span>
+        <span class="section-line"></span>
+        <time id="updatedAt">최종 업데이트 준비 중</time>
+      </div>
+      <div id="watchGrid" class="product-grid watch-grid"></div>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
