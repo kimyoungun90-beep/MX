@@ -10,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=10",
+        image: "./assets/flip8.png?v=10.1",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -21,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=10",
+        image: "./assets/fold8.png?v=10.1",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -32,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=10",
+        image: "./assets/fold8-ultra.png?v=10.1",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -45,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=10",
+        image: "./assets/watch9-40.png?v=10.1",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -55,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=10",
+        image: "./assets/watch9-44.png?v=10.1",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -65,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=10",
+        image: "./assets/watch-ultra2.png?v=10.1",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -126,17 +126,34 @@
 
   function mediaMap(payload) {
     const map = new Map();
+
+    // v9 영상설정 호환
+    for (const item of payload.videos || []) {
+      const model = String(item.model || "").trim();
+      if (!model) continue;
+      map.set(model, {
+        enabled: item.enabled === true || String(item.enabled).toUpperCase() === "TRUE",
+        type: "video",
+        url: String(item.url || "").trim(),
+        rotationSpeed: "30deg"
+      });
+    }
+
+    // v10 미디어설정이 체크되어 있으면 우선 적용
     for (const item of payload.media || []) {
       const model = String(item.model || "").trim();
       if (!model) continue;
       const type = String(item.type || "image").trim().toLowerCase();
       const rotationSpeed = String(item.rotation_speed || item.rotationSpeed || "30deg").trim() || "30deg";
-      map.set(model, {
+      const next = {
         enabled: item.enabled === true || String(item.enabled).toUpperCase() === "TRUE",
         type,
         url: String(item.url || "").trim(),
         rotationSpeed
-      });
+      };
+      if (next.enabled || !map.has(model)) {
+        map.set(model, next);
+      }
     }
     return map;
   }
