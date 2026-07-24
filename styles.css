@@ -504,3 +504,167 @@ body.layout-portrait .watch-grid .product-summary {
   .background-effects::before,
   .background-effects::after { animation: none !important; }
 }
+
+
+/* ===== v10.5 눈에 띄는 Galaxy 오로라 배경 ===== */
+html,
+body {
+  background: #eef4ff !important;
+}
+
+.background-effects {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(50, 145, 255, .42), transparent 25%),
+    radial-gradient(circle at 92% 14%, rgba(190, 75, 255, .34), transparent 26%),
+    radial-gradient(circle at 80% 92%, rgba(255, 78, 158, .24), transparent 28%),
+    radial-gradient(circle at 18% 88%, rgba(0, 216, 255, .28), transparent 30%),
+    linear-gradient(135deg, #f4f8ff 0%, #eaf2ff 35%, #f5edff 68%, #fff1f8 100%) !important;
+}
+
+/* 크게 움직이는 오로라 광원 */
+.glow {
+  filter: blur(54px) !important;
+  opacity: .58 !important;
+  mix-blend-mode: multiply;
+  animation: galaxyFloat 9s ease-in-out infinite alternate;
+}
+.glow-blue {
+  width: 58vw !important;
+  height: 42vw !important;
+  left: -15vw !important;
+  bottom: -18vw !important;
+  background: linear-gradient(135deg, #38bdf8, #4f7cff, #8b5cf6) !important;
+}
+.glow-purple {
+  width: 54vw !important;
+  height: 40vw !important;
+  right: -14vw !important;
+  bottom: -16vw !important;
+  background: linear-gradient(135deg, #a855f7, #ec4899, #fb7185) !important;
+  animation-delay: -4s;
+}
+
+/* 상단을 가로지르는 컬러 빛띠 */
+.wave {
+  height: 240px !important;
+  border-width: 4px !important;
+  filter: blur(3px) drop-shadow(0 0 16px rgba(88, 112, 255, .45)) !important;
+  opacity: .68;
+  animation: wavePulse 6s ease-in-out infinite alternate;
+}
+.wave-one {
+  bottom: 8% !important;
+  border-top-color: rgba(50, 155, 255, .58) !important;
+}
+.wave-two {
+  bottom: -2% !important;
+  border-top-color: rgba(206, 75, 255, .48) !important;
+  animation-delay: -2.5s;
+}
+
+/* 반짝이는 별과 컬러 입자 */
+.background-effects::before {
+  inset: -10% !important;
+  opacity: .95 !important;
+  background:
+    radial-gradient(circle, rgba(255,255,255,1) 0 2px, transparent 3px) 10px 20px / 95px 95px,
+    radial-gradient(circle, rgba(77,155,255,.95) 0 2px, transparent 3px) 40px 55px / 140px 140px,
+    radial-gradient(circle, rgba(184,92,255,.90) 0 2.2px, transparent 3.2px) 15px 70px / 175px 175px,
+    radial-gradient(circle, rgba(255,90,170,.78) 0 1.8px, transparent 3px) 70px 10px / 125px 125px !important;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.9));
+  animation: sparkleDriftStrong 12s linear infinite !important;
+}
+
+/* 대형 광택 빔 */
+.background-effects::after {
+  inset: -40% !important;
+  opacity: .62 !important;
+  background:
+    linear-gradient(115deg,
+      transparent 32%,
+      rgba(57, 155, 255, .18) 39%,
+      rgba(255, 255, 255, .92) 47%,
+      rgba(191, 101, 255, .28) 55%,
+      transparent 66%) !important;
+  filter: blur(13px) !important;
+  animation: galaxySweep 7s ease-in-out infinite !important;
+}
+
+/* 은은한 네온 격자 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(76, 124, 255, .085) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(166, 87, 255, .075) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.55) 18%, rgba(0,0,0,.9) 100%);
+  animation: gridMove 16s linear infinite;
+}
+
+/* 카드가 배경을 조금 투과하도록 */
+.product-card {
+  background: rgba(255, 255, 255, .90) !important;
+  backdrop-filter: blur(10px) saturate(1.18);
+  box-shadow:
+    0 12px 34px rgba(51, 73, 130, .16),
+    0 0 0 1px rgba(255,255,255,.72) inset,
+    0 0 22px rgba(var(--accent-rgb), .12) !important;
+}
+
+.topbar,
+.section-heading {
+  position: relative;
+  z-index: 2;
+}
+
+.title-wrap h1,
+.store-name,
+.brand {
+  text-shadow: 0 3px 18px rgba(76, 103, 180, .16);
+}
+
+.title-line {
+  box-shadow:
+    0 0 12px rgba(71,154,255,.75),
+    0 0 24px rgba(174,103,255,.38) !important;
+  animation: titleGlow 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes galaxyFloat {
+  0% { transform: translate3d(-3%, 1%, 0) scale(.95) rotate(-4deg); }
+  100% { transform: translate3d(5%, -5%, 0) scale(1.10) rotate(5deg); }
+}
+@keyframes wavePulse {
+  0% { transform: translateX(-2%) rotate(-4deg) scaleY(.88); opacity: .38; }
+  100% { transform: translateX(2%) rotate(3deg) scaleY(1.12); opacity: .82; }
+}
+@keyframes sparkleDriftStrong {
+  0% { transform: translate3d(-2%, -2%, 0) scale(1); }
+  50% { transform: translate3d(3%, 2%, 0) scale(1.04); }
+  100% { transform: translate3d(-2%, -2%, 0) scale(1); }
+}
+@keyframes galaxySweep {
+  0%, 12% { transform: translateX(-62%) rotate(4deg); }
+  62%, 100% { transform: translateX(62%) rotate(4deg); }
+}
+@keyframes gridMove {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 46px 46px, 46px 46px; }
+}
+@keyframes titleGlow {
+  from { filter: brightness(.92); transform: scaleX(.96); }
+  to { filter: brightness(1.25); transform: scaleX(1.03); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .wave,
+  body::before,
+  .title-line {
+    animation: none !important;
+  }
+}
