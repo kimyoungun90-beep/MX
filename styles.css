@@ -62,7 +62,8 @@ body { position:relative; isolation:isolate; }
   background: linear-gradient(90deg, var(--blue), var(--purple)); box-shadow:0 0 14px rgba(95,137,255,.22);
 }
 .brand-panel { justify-self:end; display:grid; justify-items:end; gap:12px; }
-.brand { font-size: clamp(23px,1.9vw,33px); font-weight:900; letter-spacing:.08em; color:#111827; }
+.brand { display:flex; align-items:center; justify-content:flex-end; min-height:46px; }
+.brand-logo { display:block; height:clamp(28px,2.1vw,44px); width:auto; max-width:min(180px,100%); object-fit:contain; }
 .live-badge {
   display:inline-flex; align-items:center; gap:10px; min-height:44px; padding:0 16px;
   border:1px solid rgba(63,211,150,.25); border-radius:15px; background:#eefbf5; color:#27855f;
