@@ -2,6 +2,8 @@
   "use strict";
 
   const config = window.STOCK_CONFIG || {};
+  // config.js가 브라우저 캐시에 남아도 API가 연결되도록 최종 주소를 한 번 더 보관합니다.
+  const FALLBACK_API_URL = "https://script.google.com/macros/s/AKfycby0zG_ilwjf0WNeLthdNHyaX8SmuYMp89O44eGPIVPBIgaJMezLrWFC0N7UCDa4aQEH/exec";
   const params = new URLSearchParams(location.search);
   const storeCode = params.get("store") || config.DEFAULT_STORE_CODE || "851";
 
@@ -209,9 +211,15 @@
     liveText.textContent = message;
   }
 
+  function getApiUrl() {
+    const configured = String(config.API_URL || "").trim();
+    const fallback = String(FALLBACK_API_URL || "").trim();
+    return configured || fallback;
+  }
+
   function isConfigured() {
-    const apiUrl = String(config.API_URL || "").trim();
-    return apiUrl.startsWith("https://script.google.com/");
+    const apiUrl = getApiUrl();
+    return /^https:\/\/(script\.google\.com|script\.googleusercontent\.com)\//.test(apiUrl);
   }
 
   function loadJsonp(url, timeoutMs = 8000) {
@@ -264,12 +272,13 @@
   async function refreshStock() {
     if (!isConfigured()) {
       render(DEMO_DATA);
-      setConnectionState(true, "DEMO · API URL 입력 필요");
+      setConnectionState(false, "API 주소 확인 필요");
+      updatedAtEl.textContent = "config.js의 API_URL을 확인하세요";
       return;
     }
 
     try {
-      const payload = await loadJsonp(config.API_URL);
+      const payload = await loadJsonp(getApiUrl());
       if (!payload || payload.ok !== true) {
         throw new Error(payload?.message || "재고 데이터를 읽지 못했습니다.");
       }
@@ -278,7 +287,9 @@
       setConnectionState(true, "LIVE · 10초 자동 갱신");
     } catch (error) {
       console.error(error);
-      setConnectionState(false, "연결 확인 중 · 마지막 수량 유지");
+      const shortMessage = String(error?.message || "API 연결 실패").slice(0, 38);
+      setConnectionState(false, `API 연결 실패 · ${shortMessage}`);
+      updatedAtEl.textContent = "Apps Script 배포 권한 또는 시트 구조 확인 필요";
     }
   }
 
@@ -311,6 +322,8 @@
   }
 
   render(DEMO_DATA);
+  setConnectionState(true, "API 연결 중");
+  updatedAtEl.textContent = "재고 데이터를 불러오는 중";
   refreshStock();
 
   const refreshMs = Math.max(5000, Number(config.REFRESH_MS) || 10000);

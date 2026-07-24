@@ -623,3 +623,143 @@ body.layout-portrait .watch-grid .product-summary {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ===== v3: 제품 이미지만 보이도록 수정 ===== */
+.product-image-wrap {
+  overflow: visible;
+  isolation: isolate;
+}
+
+.product-image-wrap::after {
+  inset: auto 8% -2% 8%;
+  height: 24%;
+}
+
+.product-image {
+  object-fit: contain;
+  object-position: center;
+  padding: 4px;
+  transform: scale(0.92);
+  transform-origin: center;
+}
+
+.phone-grid .product-image {
+  transform: scale(0.96);
+}
+
+.watch-grid .product-image {
+  transform: scale(0.90);
+}
+
+/* 노트북 브라우저처럼 실제 표시 높이가 작은 경우에도 전체 카드가 잘리지 않도록 압축 */
+@media (orientation: landscape) and (max-height: 850px) {
+  :root {
+    --page-pad: 14px;
+    --gap: 10px;
+  }
+
+  .dashboard {
+    grid-template-rows: 114px minmax(0, 1.6fr) minmax(0, 0.78fr);
+  }
+
+  .topbar {
+    grid-template-columns: 1fr minmax(390px, 1.25fr) 1fr;
+  }
+
+  .eyebrow {
+    font-size: 20px;
+  }
+
+  .title-wrap h1 {
+    font-size: 48px;
+    margin-top: 3px;
+  }
+
+  .title-line {
+    height: 3px;
+  }
+
+  .brand-panel {
+    gap: 9px;
+  }
+
+  .live-badge {
+    min-height: 39px;
+    padding: 0 13px;
+  }
+
+  .product-card {
+    grid-template-rows: 50px minmax(0, 1fr);
+    border-radius: 18px;
+  }
+
+  .card-title {
+    font-size: 25px;
+  }
+
+  .card-body {
+    padding: 8px 10px 10px;
+    gap: 6px;
+  }
+
+  .product-summary {
+    min-height: 0;
+  }
+
+  .total-number {
+    font-size: 60px;
+  }
+
+  .stock-state {
+    min-height: 24px;
+    margin-top: 3px;
+    font-size: 12px;
+  }
+
+  .variant-list {
+    gap: 5px;
+  }
+
+  .variant-row {
+    min-height: 35px;
+    border-radius: 10px;
+  }
+
+  .variant-name {
+    font-size: 17px;
+  }
+
+  .variant-qty {
+    font-size: 18px;
+  }
+
+  .color-dot {
+    width: 22px;
+  }
+
+  .section-heading {
+    min-height: 20px;
+    font-size: 22px;
+  }
+
+  .watch-grid .product-card {
+    grid-template-rows: 44px minmax(0, 1fr);
+  }
+
+  .watch-grid .card-title {
+    font-size: 20px;
+  }
+
+  .watch-grid .card-body {
+    padding: 6px 10px 8px;
+  }
+
+  .watch-grid .total-number {
+    font-size: 48px;
+  }
+
+  .watch-grid .variant-row {
+    min-height: 34px;
+  }
+}
