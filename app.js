@@ -11,7 +11,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png",
+        image: "./assets/flip8.png?v=5",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -22,7 +22,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png",
+        image: "./assets/fold8.png?v=5",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -33,7 +33,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png",
+        image: "./assets/fold8-ultra.png?v=5",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -46,7 +46,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png",
+        image: "./assets/watch9-40.png?v=5",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -56,7 +56,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png",
+        image: "./assets/watch9-44.png?v=5",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -66,7 +66,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png",
+        image: "./assets/watch-ultra2.png?v=5",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
