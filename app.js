@@ -10,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=10.1",
+        image: "./assets/flip8.png?v=10.3.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -21,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=10.1",
+        image: "./assets/fold8.png?v=10.3.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -32,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=10.1",
+        image: "./assets/fold8-ultra.png?v=10.3.2",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -45,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=10.1",
+        image: "./assets/watch9-40.png?v=10.3.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -55,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=10.1",
+        image: "./assets/watch9-44.png?v=10.3.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -65,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=10.1",
+        image: "./assets/watch-ultra2.png?v=10.3.2",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -107,6 +107,9 @@
   const updatedAtEl = document.getElementById("updatedAt");
   const liveBadge = document.getElementById("liveBadge");
   const liveText = document.getElementById("liveText");
+
+  let lastMediaSignature = "";
+  let hasRenderedCards = false;
 
   function applyLayout() {
     document.body.classList.remove("layout-landscape", "layout-portrait");
@@ -216,13 +219,14 @@
 
     const card = document.createElement("article");
     card.className = "product-card";
+    card.dataset.model = product.model;
     card.style.setProperty("--accent", product.accent);
     card.style.setProperty("--accent-rgb", product.accentRgb);
 
     const rows = product.variants.map((variant) => {
       const qty = qtyMap.get(variant.itemCode) || 0;
       return `
-        <div class="variant-row">
+        <div class="variant-row" data-item-code="${variant.itemCode}">
           <span class="color-dot" style="--swatch:${variant.swatch}"></span>
           <span class="variant-name">${escapeHtml(variant.color)}</span>
           <span class="item-code">${escapeHtml(variant.itemCode)}</span>
@@ -254,16 +258,59 @@
     return card;
   }
 
+  function mediaSignature(mediaSettings) {
+    return JSON.stringify(
+      Array.from(mediaSettings.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+    );
+  }
+
+  function updateExistingCards(qtyMap) {
+    document.querySelectorAll('.product-card').forEach((card) => {
+      const model = card.dataset.model;
+      const product = [...CATALOG.phones, ...CATALOG.watches].find((item) => item.model === model);
+      if (!product) return;
+
+      const total = product.variants.reduce(
+        (sum, variant) => sum + (qtyMap.get(variant.itemCode) || 0),
+        0
+      );
+      const state = stockState(total);
+
+      const totalNumber = card.querySelector('.total-number');
+      const stockStateEl = card.querySelector('.stock-state');
+      if (totalNumber) totalNumber.textContent = String(total);
+      if (stockStateEl) {
+        stockStateEl.textContent = state.text;
+        stockStateEl.className = `stock-state ${state.className}`.trim();
+      }
+
+      product.variants.forEach((variant) => {
+        const row = card.querySelector(`[data-item-code="${variant.itemCode}"]`);
+        const qty = row?.querySelector('.variant-qty');
+        if (qty) qty.textContent = `${qtyMap.get(variant.itemCode) || 0}대`;
+      });
+    });
+  }
+
   function render(payload) {
     const qtyMap = quantityMap(payload);
     const mediaSettings = mediaMap(payload);
+    const nextSignature = mediaSignature(mediaSettings);
 
     storeNameEl.textContent = payload.store_name || config.DEFAULT_STORE_NAME || `코스트코 ${storeCode}점`;
     updatedAtEl.textContent = payload.updated_at ? `최종 업데이트 ${payload.updated_at}` : "최종 업데이트 시간 확인 중";
 
+    if (hasRenderedCards && nextSignature === lastMediaSignature) {
+      updateExistingCards(qtyMap);
+      return;
+    }
+
     phoneGrid.replaceChildren(...CATALOG.phones.map((product) => createCard(product, qtyMap, mediaSettings)));
     watchGrid.replaceChildren(...CATALOG.watches.map((product) => createCard(product, qtyMap, mediaSettings)));
 
+    lastMediaSignature = nextSignature;
+    hasRenderedCards = true;
     activateMedia();
   }
 
@@ -418,7 +465,8 @@
     orientationQuery.addListener(scheduleLayoutUpdate);
   }
 
-  render(DEMO_DATA);
+  phoneGrid.innerHTML = '<div class="media-loading">재고 데이터를 불러오는 중입니다.</div>';
+  watchGrid.innerHTML = '';
   setConnectionState(true, '실시간 업데이트');
   updatedAtEl.textContent = '재고 데이터를 불러오는 중';
   refreshStock();

@@ -286,3 +286,104 @@ body.layout-portrait .watch-grid .product-summary { grid-template-columns:minmax
     transform: scale(0.88) translateY(4px);
   }
 }
+
+
+/* ===== v10.2 최종 위치/문구/라인 수정 ===== */
+
+/* 전체 재고 영역 아래·옆 구분선 완전 제거 */
+.product-summary,
+.phone-grid .product-summary,
+.watch-grid .product-summary,
+body.layout-portrait .phone-grid .product-summary,
+body.layout-portrait .watch-grid .product-summary {
+  border-bottom: 0 !important;
+  border-right: 0 !important;
+}
+
+/* 재고 상태 문구는 무조건 한 줄 */
+.stock-state {
+  width: max-content;
+  max-width: none;
+  min-width: 0;
+  white-space: nowrap !important;
+  word-break: keep-all;
+  overflow: visible;
+  line-height: 1;
+  padding-left: 9px;
+  padding-right: 9px;
+  font-size: clamp(10px, 0.74vw, 14px);
+}
+
+/* 휴대폰 전체 재고 영역을 조금 넓혀 긴 문구가 줄바꿈되지 않게 함 */
+.phone-grid .product-summary {
+  grid-template-columns: minmax(155px, 1.25fr) minmax(132px, 0.72fr);
+  column-gap: 10px;
+}
+
+/* 워치 이미지를 사각형 안에서 아래쪽으로 이동 */
+.watch-grid .product-image-wrap {
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 14px !important;
+  overflow: hidden !important;
+}
+
+.watch-grid .product-image {
+  transform: scale(0.90) translateY(12px) !important;
+  transform-origin: center center;
+  object-position: center center !important;
+}
+
+.watch-grid .product-video,
+.watch-grid .product-3d {
+  transform: scale(0.90) translateY(12px) !important;
+  transform-origin: center center;
+}
+
+/* 작은 높이의 가로 화면에서도 같은 위치 유지 */
+@media (orientation: landscape) and (max-height: 850px) {
+  .watch-grid .product-image-wrap {
+    padding-top: 10px !important;
+  }
+
+  .watch-grid .product-image,
+  .watch-grid .product-video,
+  .watch-grid .product-3d {
+    transform: scale(0.88) translateY(9px) !important;
+  }
+
+  .stock-state {
+    font-size: 11px;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+}
+
+/* 좁은 화면에서도 전체 재고/품절/재고 충분 영역에 선이 생기지 않게 함 */
+@media (max-width: 900px) {
+  .product-summary,
+  .phone-grid .product-summary,
+  .watch-grid .product-summary {
+    border: 0 !important;
+  }
+
+  .stock-state {
+    white-space: nowrap !important;
+    width: max-content;
+  }
+}
+
+
+/* ===== v10.3: 영상 갱신 시 PNG 깜빡임 제거 ===== */
+.media-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  border: 1px solid #e8edf5;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.72);
+  color: #64748b;
+  font-weight: 800;
+}
