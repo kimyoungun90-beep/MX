@@ -11,7 +11,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=5",
+        image: "./assets/flip8.png?v=6",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -22,7 +22,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=5",
+        image: "./assets/fold8.png?v=6",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -33,7 +33,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=5",
+        image: "./assets/fold8-ultra.png?v=6",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -46,7 +46,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=5",
+        image: "./assets/watch9-40.png?v=6",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -56,7 +56,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=5",
+        image: "./assets/watch9-44.png?v=6",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -66,7 +66,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=5",
+        image: "./assets/watch-ultra2.png?v=6",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -272,7 +272,7 @@
   async function refreshStock() {
     if (!isConfigured()) {
       render(DEMO_DATA);
-      setConnectionState(false, "API 주소 확인 필요");
+      setConnectionState(false, "API 설정 확인");
       updatedAtEl.textContent = "config.js의 API_URL을 확인하세요";
       return;
     }
@@ -284,7 +284,7 @@
       }
 
       render(payload);
-      setConnectionState(true, "LIVE · 10초 자동 갱신");
+      setConnectionState(true, "실시간 업데이트");
     } catch (error) {
       console.error(error);
       const shortMessage = String(error?.message || "API 연결 실패").slice(0, 38);
@@ -322,7 +322,7 @@
   }
 
   render(DEMO_DATA);
-  setConnectionState(true, "API 연결 중");
+  setConnectionState(true, "실시간 업데이트");
   updatedAtEl.textContent = "재고 데이터를 불러오는 중";
   refreshStock();
 
