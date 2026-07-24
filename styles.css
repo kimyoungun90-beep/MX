@@ -387,3 +387,120 @@ body.layout-portrait .watch-grid .product-summary {
   color: #64748b;
   font-weight: 800;
 }
+
+
+/* ===== v10.4: 워치 배치 + 상태문구 + 반짝이는 배경 ===== */
+
+/* 워치 이미지는 v10.2보다 아주 조금 위로 */
+.watch-grid .product-image-wrap {
+  padding-top: 8px !important;
+}
+.watch-grid .product-image,
+.watch-grid .product-video,
+.watch-grid .product-3d {
+  transform: scale(0.90) translateY(6px) !important;
+}
+
+/* 워치 카드: 색상 목록 칸을 조금 줄이고 전체 재고 영역 확보 */
+.watch-grid .card-body {
+  grid-template-columns: minmax(185px, 1.08fr) minmax(0, 1.17fr) !important;
+  column-gap: 8px;
+}
+.watch-grid .product-summary {
+  grid-template-columns: minmax(108px, 1fr) minmax(110px, .86fr) !important;
+  padding-right: 4px !important;
+}
+.watch-grid .variant-list {
+  align-content: center;
+  gap: 5px;
+}
+.watch-grid .variant-row {
+  min-height: 34px !important;
+  grid-template-columns: auto minmax(0, .9fr) auto auto;
+  gap: 7px;
+  padding-left: 9px;
+  padding-right: 9px;
+}
+.watch-grid .variant-name {
+  font-size: clamp(15px, 1.02vw, 19px);
+}
+.watch-grid .item-code {
+  font-size: clamp(11px, .72vw, 14px);
+}
+.watch-grid .variant-qty {
+  min-width: 42px;
+  font-size: clamp(17px, 1.12vw, 21px);
+}
+.watch-grid .color-dot {
+  width: clamp(19px, 1.28vw, 24px);
+}
+
+/* 워치 재고 상태 문구 공간 확보 */
+.watch-grid .total-box {
+  min-width: 108px;
+  overflow: visible;
+}
+.watch-grid .stock-state {
+  font-size: clamp(10px, .68vw, 12px) !important;
+  padding-left: 7px;
+  padding-right: 7px;
+  max-width: none;
+  white-space: nowrap !important;
+  transform: translateX(-2px);
+}
+
+/* 부드럽게 반짝이는 움직이는 배경 */
+.background-effects::before,
+.background-effects::after {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  opacity: .55;
+}
+.background-effects::before {
+  background:
+    radial-gradient(circle at 12% 28%, rgba(255,255,255,.95) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 36% 72%, rgba(120,170,255,.42) 0 1.3px, transparent 2.4px),
+    radial-gradient(circle at 68% 20%, rgba(194,136,255,.40) 0 1.4px, transparent 2.5px),
+    radial-gradient(circle at 88% 66%, rgba(255,173,210,.36) 0 1.2px, transparent 2.2px);
+  background-size: 190px 190px, 260px 260px, 230px 230px, 300px 300px;
+  animation: sparkleDrift 18s linear infinite;
+}
+.background-effects::after {
+  background:
+    linear-gradient(115deg, transparent 25%, rgba(255,255,255,.42) 44%, rgba(255,255,255,.82) 50%, rgba(255,255,255,.30) 56%, transparent 72%);
+  transform: translateX(-75%) rotate(2deg);
+  filter: blur(20px);
+  opacity: .22;
+  animation: softShimmer 11s ease-in-out infinite;
+}
+@keyframes sparkleDrift {
+  0% { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+  50% { transform: translate3d(1.5%, 1%, 0) scale(1.025); }
+  100% { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+}
+@keyframes softShimmer {
+  0%, 20% { transform: translateX(-85%) rotate(2deg); opacity: .08; }
+  45%, 65% { opacity: .22; }
+  80%, 100% { transform: translateX(85%) rotate(2deg); opacity: .06; }
+}
+
+@media (orientation: landscape) and (max-height: 850px) {
+  .watch-grid .product-image-wrap { padding-top: 6px !important; }
+  .watch-grid .product-image,
+  .watch-grid .product-video,
+  .watch-grid .product-3d {
+    transform: scale(0.88) translateY(5px) !important;
+  }
+  .watch-grid .card-body {
+    grid-template-columns: minmax(178px, 1.08fr) minmax(0, 1.12fr) !important;
+  }
+  .watch-grid .variant-row { min-height: 32px !important; }
+  .watch-grid .stock-state { font-size: 10px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-effects::before,
+  .background-effects::after { animation: none !important; }
+}
