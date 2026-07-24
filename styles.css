@@ -632,3 +632,8 @@ body::before {
     display: none !important;
   }
 }
+
+
+/* v10.8 삼성 로고 투명 배경 */
+.brand { background: transparent !important; }
+.brand-logo { background: transparent !important; box-shadow: none !important; }
