@@ -11,7 +11,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=6",
+        image: "./assets/flip8.png?v=9",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -22,7 +22,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=6",
+        image: "./assets/fold8.png?v=9",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -33,7 +33,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=6",
+        image: "./assets/fold8-ultra.png?v=9",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -46,7 +46,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=6",
+        image: "./assets/watch9-40.png?v=9",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -56,7 +56,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=6",
+        image: "./assets/watch9-44.png?v=9",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -66,7 +66,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=6",
+        image: "./assets/watch-ultra2.png?v=9",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -137,7 +137,57 @@
     return { text: "재고 여유", className: "" };
   }
 
-  function createCard(product, qtyMap) {
+
+  function videoMap(payload) {
+    const map = new Map();
+
+    for (const item of payload.videos || []) {
+      const model = String(item.model || "").trim();
+      if (!model) continue;
+
+      map.set(model, {
+        enabled:
+          item.enabled === true ||
+          String(item.enabled).toUpperCase() === "TRUE",
+        url: String(item.url || "").trim()
+      });
+    }
+
+    return map;
+  }
+
+  function productVisual(product, videos) {
+    const setting = videos.get(product.model);
+
+    if (setting && setting.enabled && setting.url) {
+      return `
+        <video
+          class="product-video"
+          src="${escapeHtml(setting.url)}"
+          poster="${product.image}"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          aria-label="${escapeHtml(product.model)} 회전 영상">
+        </video>
+        <img
+          class="product-image product-video-fallback"
+          src="${product.image}"
+          alt="${escapeHtml(product.model)}">
+      `;
+    }
+
+    return `
+      <img
+        class="product-image"
+        src="${product.image}"
+        alt="${escapeHtml(product.model)}">
+    `;
+  }
+
+  function createCard(product, qtyMap, videos) {
     const total = product.variants.reduce(
       (sum, variant) => sum + (qtyMap.get(variant.itemCode) || 0),
       0
@@ -166,7 +216,7 @@
       <div class="card-body">
         <div class="product-summary">
           <div class="product-image-wrap">
-            <img class="product-image" src="${product.image}" alt="${escapeHtml(product.model)}">
+            ${productVisual(product, videos)}
           </div>
           <div class="total-box">
             <div class="total-label">전체 재고</div>
@@ -186,6 +236,7 @@
 
   function render(payload) {
     const qtyMap = quantityMap(payload);
+    const videos = videoMap(payload);
 
     storeNameEl.textContent =
       payload.store_name ||
@@ -197,12 +248,40 @@
       : "최종 업데이트 시간 확인 중";
 
     phoneGrid.replaceChildren(
-      ...CATALOG.phones.map((product) => createCard(product, qtyMap))
+      ...CATALOG.phones.map((product) => createCard(product, qtyMap, videos))
     );
 
     watchGrid.replaceChildren(
-      ...CATALOG.watches.map((product) => createCard(product, qtyMap))
+      ...CATALOG.watches.map((product) => createCard(product, qtyMap, videos))
     );
+
+    activateVideos();
+  }
+
+  function activateVideos() {
+    document.querySelectorAll(".product-video").forEach((video) => {
+      const fallback = video.parentElement.querySelector(
+        ".product-video-fallback"
+      );
+
+      const showFallback = () => {
+        video.style.display = "none";
+        if (fallback) fallback.style.display = "block";
+      };
+
+      const showVideo = () => {
+        video.style.display = "block";
+        if (fallback) fallback.style.display = "none";
+      };
+
+      video.addEventListener("loadeddata", showVideo, { once: true });
+      video.addEventListener("error", showFallback, { once: true });
+
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(showFallback);
+      }
+    });
   }
 
   function setConnectionState(ok, message) {
