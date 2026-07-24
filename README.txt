@@ -18,5 +18,5 @@ v10.4 수정
 - 확인: https://mx-dfl.pages.dev/?store=851&v=10.4
 
 
-v10.5: 강한 오로라, 네온 파티클, 빛띠, 움직이는 격자 배경 추가.
-확인: https://mx-dfl.pages.dev/?store=851&v=10.5
+v10.6: 무거운 오로라/입자/격자 제거, 정적인 프리미엄 그라데이션과 18초 간격의 가벼운 광택 효과만 적용.
+확인: https://mx-dfl.pages.dev/?store=851&v=10.6
