@@ -1,0 +1,1 @@
+여기에 .glb 3D 파일을 넣으세요. 예: galaxy-z-fold8-approx.glb

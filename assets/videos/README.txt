@@ -1,0 +1,1 @@
+여기에 .mp4 또는 .webm 영상을 넣으세요. 예: fold8-ultra-white-bg-h264.mp4

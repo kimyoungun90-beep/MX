@@ -2,7 +2,6 @@
   "use strict";
 
   const config = window.STOCK_CONFIG || {};
-  // config.js가 브라우저 캐시에 남아도 API가 연결되도록 최종 주소를 한 번 더 보관합니다.
   const FALLBACK_API_URL = "https://script.google.com/macros/s/AKfycby0zG_ilwjf0WNeLthdNHyaX8SmuYMp89O44eGPIVPBIgaJMezLrWFC0N7UCDa4aQEH/exec";
   const params = new URLSearchParams(location.search);
   const storeCode = params.get("store") || config.DEFAULT_STORE_CODE || "851";
@@ -11,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=9",
+        image: "./assets/flip8.png?v=10",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -22,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=9",
+        image: "./assets/fold8.png?v=10",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -33,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=9",
+        image: "./assets/fold8-ultra.png?v=10",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -46,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=9",
+        image: "./assets/watch9-40.png?v=10",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -56,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=9",
+        image: "./assets/watch9-44.png?v=10",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -66,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=9",
+        image: "./assets/watch-ultra2.png?v=10",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -98,7 +97,8 @@
       { item_code: "696914", quantity: 2 },
       { item_code: "696915", quantity: 1 },
       { item_code: "696916", quantity: 1 }
-    ]
+    ],
+    media: []
   };
 
   const phoneGrid = document.getElementById("phoneGrid");
@@ -110,14 +110,8 @@
 
   function applyLayout() {
     document.body.classList.remove("layout-landscape", "layout-portrait");
-
-    const isPortrait =
-      window.matchMedia("(orientation: portrait)").matches ||
-      document.documentElement.clientHeight > document.documentElement.clientWidth;
-
-    document.body.classList.add(
-      isPortrait ? "layout-portrait" : "layout-landscape"
-    );
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches || document.documentElement.clientHeight > document.documentElement.clientWidth;
+    document.body.classList.add(isPortrait ? "layout-portrait" : "layout-landscape");
   }
 
   function quantityMap(payload) {
@@ -130,6 +124,23 @@
     return map;
   }
 
+  function mediaMap(payload) {
+    const map = new Map();
+    for (const item of payload.media || []) {
+      const model = String(item.model || "").trim();
+      if (!model) continue;
+      const type = String(item.type || "image").trim().toLowerCase();
+      const rotationSpeed = String(item.rotation_speed || item.rotationSpeed || "30deg").trim() || "30deg";
+      map.set(model, {
+        enabled: item.enabled === true || String(item.enabled).toUpperCase() === "TRUE",
+        type,
+        url: String(item.url || "").trim(),
+        rotationSpeed
+      });
+    }
+    return map;
+  }
+
   function stockState(total) {
     if (total <= 0) return { text: "품절", className: "is-danger" };
     if (total <= 2) return { text: "재고 얼마 남지 않았어요", className: "is-danger" };
@@ -137,29 +148,13 @@
     return { text: "재고 여유", className: "" };
   }
 
-
-  function videoMap(payload) {
-    const map = new Map();
-
-    for (const item of payload.videos || []) {
-      const model = String(item.model || "").trim();
-      if (!model) continue;
-
-      map.set(model, {
-        enabled:
-          item.enabled === true ||
-          String(item.enabled).toUpperCase() === "TRUE",
-        url: String(item.url || "").trim()
-      });
+  function productVisual(product, mediaSettings) {
+    const setting = mediaSettings.get(product.model);
+    if (!setting || !setting.enabled || !setting.url || setting.type === "image") {
+      return `<img class="product-image" src="${product.image}" alt="${escapeHtml(product.model)}">`;
     }
 
-    return map;
-  }
-
-  function productVisual(product, videos) {
-    const setting = videos.get(product.model);
-
-    if (setting && setting.enabled && setting.url) {
+    if (setting.type === "video") {
       return `
         <video
           class="product-video"
@@ -170,28 +165,36 @@
           loop
           playsinline
           preload="auto"
-          aria-label="${escapeHtml(product.model)} 회전 영상">
-        </video>
-        <img
-          class="product-image product-video-fallback"
-          src="${product.image}"
-          alt="${escapeHtml(product.model)}">
+          aria-label="${escapeHtml(product.model)} 회전 영상"></video>
+        <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
       `;
     }
 
-    return `
-      <img
-        class="product-image"
-        src="${product.image}"
-        alt="${escapeHtml(product.model)}">
-    `;
+    if (setting.type === "3d") {
+      return `
+        <model-viewer
+          class="product-3d"
+          src="${escapeHtml(setting.url)}"
+          poster="${product.image}"
+          alt="${escapeHtml(product.model)} 3D 모델"
+          auto-rotate
+          rotation-per-second="${escapeHtml(setting.rotationSpeed)}"
+          camera-controls
+          interaction-prompt="none"
+          shadow-intensity="0.9"
+          exposure="1"
+          ar="false"
+          disable-pan>
+        </model-viewer>
+        <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
+      `;
+    }
+
+    return `<img class="product-image" src="${product.image}" alt="${escapeHtml(product.model)}">`;
   }
 
-  function createCard(product, qtyMap, videos) {
-    const total = product.variants.reduce(
-      (sum, variant) => sum + (qtyMap.get(variant.itemCode) || 0),
-      0
-    );
+  function createCard(product, qtyMap, mediaSettings) {
+    const total = product.variants.reduce((sum, variant) => sum + (qtyMap.get(variant.itemCode) || 0), 0);
     const state = stockState(total);
 
     const card = document.createElement("article");
@@ -216,7 +219,7 @@
       <div class="card-body">
         <div class="product-summary">
           <div class="product-image-wrap">
-            ${productVisual(product, videos)}
+            ${productVisual(product, mediaSettings)}
           </div>
           <div class="total-box">
             <div class="total-label">전체 재고</div>
@@ -236,63 +239,70 @@
 
   function render(payload) {
     const qtyMap = quantityMap(payload);
-    const videos = videoMap(payload);
+    const mediaSettings = mediaMap(payload);
 
-    storeNameEl.textContent =
-      payload.store_name ||
-      config.DEFAULT_STORE_NAME ||
-      `코스트코 ${storeCode}점`;
+    storeNameEl.textContent = payload.store_name || config.DEFAULT_STORE_NAME || `코스트코 ${storeCode}점`;
+    updatedAtEl.textContent = payload.updated_at ? `최종 업데이트 ${payload.updated_at}` : "최종 업데이트 시간 확인 중";
 
-    updatedAtEl.textContent = payload.updated_at
-      ? `최종 업데이트 ${payload.updated_at}`
-      : "최종 업데이트 시간 확인 중";
+    phoneGrid.replaceChildren(...CATALOG.phones.map((product) => createCard(product, qtyMap, mediaSettings)));
+    watchGrid.replaceChildren(...CATALOG.watches.map((product) => createCard(product, qtyMap, mediaSettings)));
 
-    phoneGrid.replaceChildren(
-      ...CATALOG.phones.map((product) => createCard(product, qtyMap, videos))
-    );
-
-    watchGrid.replaceChildren(
-      ...CATALOG.watches.map((product) => createCard(product, qtyMap, videos))
-    );
-
-    activateVideos();
+    activateMedia();
   }
 
-  function activateVideos() {
-    document.querySelectorAll(".product-video").forEach((video) => {
-      const fallback = video.parentElement.querySelector(
-        ".product-video-fallback"
-      );
-
+  function activateMedia() {
+    document.querySelectorAll('.product-video').forEach((video) => {
+      const fallback = video.parentElement.querySelector('.product-media-fallback');
       const showFallback = () => {
-        video.style.display = "none";
-        if (fallback) fallback.style.display = "block";
+        video.style.display = 'none';
+        if (fallback) fallback.style.display = 'block';
       };
-
       const showVideo = () => {
-        video.style.display = "block";
-        if (fallback) fallback.style.display = "none";
+        video.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
       };
-
-      video.addEventListener("loadeddata", showVideo, { once: true });
-      video.addEventListener("error", showFallback, { once: true });
-
+      video.addEventListener('loadeddata', showVideo, { once: true });
+      video.addEventListener('error', showFallback, { once: true });
       const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === "function") {
+      if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(showFallback);
       }
+    });
+
+    document.querySelectorAll('.product-3d').forEach((viewer) => {
+      const fallback = viewer.parentElement.querySelector('.product-media-fallback');
+      const showFallback = () => {
+        viewer.style.display = 'none';
+        if (fallback) fallback.style.display = 'block';
+      };
+      const showViewer = () => {
+        viewer.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
+      };
+
+      const isModelViewerLoaded = !!customElements.get('model-viewer');
+      if (!isModelViewerLoaded) {
+        showFallback();
+        return;
+      }
+
+      viewer.addEventListener('load', showViewer, { once: true });
+      viewer.addEventListener('error', showFallback, { once: true });
+      setTimeout(() => {
+        if (!viewer.loaded) showFallback();
+      }, 4000);
     });
   }
 
   function setConnectionState(ok, message) {
-    liveBadge.classList.toggle("is-error", !ok);
-    liveBadge.classList.toggle("is-live", ok);
+    liveBadge.classList.toggle('is-error', !ok);
+    liveBadge.classList.toggle('is-live', ok);
     liveText.textContent = message;
   }
 
   function getApiUrl() {
-    const configured = String(config.API_URL || "").trim();
-    const fallback = String(FALLBACK_API_URL || "").trim();
+    const configured = String(config.API_URL || '').trim();
+    const fallback = String(FALLBACK_API_URL || '').trim();
     return configured || fallback;
   }
 
@@ -303,11 +313,9 @@
 
   function loadJsonp(url, timeoutMs = 8000) {
     return new Promise((resolve, reject) => {
-      const callbackName =
-        `__stockCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-
-      const script = document.createElement("script");
-      const separator = url.includes("?") ? "&" : "?";
+      const callbackName = `__stockCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const script = document.createElement('script');
+      const separator = url.includes('?') ? '&' : '?';
       let finished = false;
 
       const cleanup = () => {
@@ -319,7 +327,7 @@
         if (finished) return;
         finished = true;
         cleanup();
-        reject(new Error("재고 서버 응답 시간이 초과되었습니다."));
+        reject(new Error('재고 서버 응답 시간이 초과되었습니다.'));
       }, timeoutMs);
 
       window[callbackName] = (data) => {
@@ -335,15 +343,10 @@
         finished = true;
         clearTimeout(timer);
         cleanup();
-        reject(new Error("재고 서버에 연결하지 못했습니다."));
+        reject(new Error('재고 서버에 연결하지 못했습니다.'));
       };
 
-      script.src =
-        `${url}${separator}` +
-        `action=stock&store=${encodeURIComponent(storeCode)}` +
-        `&callback=${encodeURIComponent(callbackName)}` +
-        `&_=${Date.now()}`;
-
+      script.src = `${url}${separator}` + `action=stock&store=${encodeURIComponent(storeCode)}` + `&callback=${encodeURIComponent(callbackName)}` + `&_=${Date.now()}`;
       document.head.appendChild(script);
     });
   }
@@ -351,58 +354,56 @@
   async function refreshStock() {
     if (!isConfigured()) {
       render(DEMO_DATA);
-      setConnectionState(false, "API 설정 확인");
-      updatedAtEl.textContent = "config.js의 API_URL을 확인하세요";
+      setConnectionState(false, 'API 설정 확인');
+      updatedAtEl.textContent = 'config.js의 API_URL을 확인하세요';
       return;
     }
 
     try {
       const payload = await loadJsonp(getApiUrl());
       if (!payload || payload.ok !== true) {
-        throw new Error(payload?.message || "재고 데이터를 읽지 못했습니다.");
+        throw new Error(payload?.message || '재고 데이터를 읽지 못했습니다.');
       }
-
       render(payload);
-      setConnectionState(true, "실시간 업데이트");
+      setConnectionState(true, '실시간 업데이트');
     } catch (error) {
       console.error(error);
-      const shortMessage = String(error?.message || "API 연결 실패").slice(0, 38);
+      const shortMessage = String(error?.message || 'API 연결 실패').slice(0, 38);
       setConnectionState(false, `API 연결 실패 · ${shortMessage}`);
-      updatedAtEl.textContent = "Apps Script 배포 권한 또는 시트 구조 확인 필요";
+      updatedAtEl.textContent = 'Apps Script 배포 권한 또는 시트 구조 확인 필요';
     }
   }
 
   function escapeHtml(value) {
     return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 
   applyLayout();
-
   let layoutTimer = null;
   const scheduleLayoutUpdate = () => {
     clearTimeout(layoutTimer);
     layoutTimer = setTimeout(applyLayout, 120);
   };
 
-  addEventListener("resize", scheduleLayoutUpdate);
-  addEventListener("orientationchange", scheduleLayoutUpdate);
-  document.addEventListener("fullscreenchange", scheduleLayoutUpdate);
+  addEventListener('resize', scheduleLayoutUpdate);
+  addEventListener('orientationchange', scheduleLayoutUpdate);
+  document.addEventListener('fullscreenchange', scheduleLayoutUpdate);
 
-  const orientationQuery = window.matchMedia("(orientation: portrait)");
-  if (typeof orientationQuery.addEventListener === "function") {
-    orientationQuery.addEventListener("change", scheduleLayoutUpdate);
-  } else if (typeof orientationQuery.addListener === "function") {
+  const orientationQuery = window.matchMedia('(orientation: portrait)');
+  if (typeof orientationQuery.addEventListener === 'function') {
+    orientationQuery.addEventListener('change', scheduleLayoutUpdate);
+  } else if (typeof orientationQuery.addListener === 'function') {
     orientationQuery.addListener(scheduleLayoutUpdate);
   }
 
   render(DEMO_DATA);
-  setConnectionState(true, "실시간 업데이트");
-  updatedAtEl.textContent = "재고 데이터를 불러오는 중";
+  setConnectionState(true, '실시간 업데이트');
+  updatedAtEl.textContent = '재고 데이터를 불러오는 중';
   refreshStock();
 
   const refreshMs = Math.max(5000, Number(config.REFRESH_MS) || 10000);
