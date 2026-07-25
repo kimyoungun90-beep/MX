@@ -10,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=10.6.2",
+        image: "./assets/flip8.png?v=10.9.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -21,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=10.6.2",
+        image: "./assets/fold8.png?v=10.9.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -32,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=10.6.2",
+        image: "./assets/fold8-ultra.png?v=10.9.2",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -45,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=10.6.2",
+        image: "./assets/watch9-40.png?v=10.9.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -55,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=10.6.2",
+        image: "./assets/watch9-44.png?v=10.9.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -65,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=10.6.2",
+        image: "./assets/watch-ultra2.png?v=10.9.2",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -176,17 +176,16 @@
 
     if (setting.type === "video") {
       return `
+        <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
         <video
           class="product-video"
           src="${escapeHtml(setting.url)}"
-          poster="${product.image}"
           autoplay
           muted
           loop
           playsinline
           preload="auto"
           aria-label="${escapeHtml(product.model)} 회전 영상"></video>
-        <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
       `;
     }
 
@@ -317,20 +316,38 @@
   function activateMedia() {
     document.querySelectorAll('.product-video').forEach((video) => {
       const fallback = video.parentElement.querySelector('.product-media-fallback');
+      let videoReady = false;
+
       const showFallback = () => {
-        video.style.display = 'none';
-        if (fallback) fallback.style.display = 'block';
+        videoReady = false;
+        video.classList.remove('is-playing');
+        if (fallback) fallback.classList.remove('is-hidden');
       };
+
       const showVideo = () => {
-        video.style.display = 'block';
-        if (fallback) fallback.style.display = 'none';
+        if (video.readyState < 2) return;
+        videoReady = true;
+        video.classList.add('is-playing');
+        if (fallback) fallback.classList.add('is-hidden');
       };
-      video.addEventListener('loadeddata', showVideo, { once: true });
-      video.addEventListener('error', showFallback, { once: true });
+
+      showFallback();
+
+      video.addEventListener('playing', showVideo);
+      video.addEventListener('canplay', showVideo);
+      video.addEventListener('error', showFallback);
+      video.addEventListener('abort', showFallback);
+      video.addEventListener('stalled', showFallback);
+      video.addEventListener('emptied', showFallback);
+
       const playPromise = video.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(showFallback);
       }
+
+      setTimeout(() => {
+        if (!videoReady) showFallback();
+      }, 5000);
     });
 
     document.querySelectorAll('.product-3d').forEach((viewer) => {

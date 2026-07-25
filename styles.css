@@ -637,3 +637,39 @@ body::before {
 /* v10.8 삼성 로고 투명 배경 */
 .brand { background: transparent !important; }
 .brand-logo { background: transparent !important; box-shadow: none !important; }
+
+
+/* ===== v10.9 M7 영상 실패 시 PNG 공백 방지 ===== */
+.product-image-wrap {
+  position: relative;
+}
+
+.product-media-fallback {
+  display: block !important;
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .16s ease;
+}
+
+.product-media-fallback.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.product-video {
+  position: absolute !important;
+  inset: 0;
+  z-index: 2;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .16s ease;
+}
+
+.product-video.is-playing {
+  opacity: 1;
+  visibility: visible;
+}
