@@ -10,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=10.9.2",
+        image: "./assets/flip8.png?v=11.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -21,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=10.9.2",
+        image: "./assets/fold8.png?v=11.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -32,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=10.9.2",
+        image: "./assets/fold8-ultra.png?v=11.2",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -45,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=10.9.2",
+        image: "./assets/watch9-40.png?v=11.2",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -55,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=10.9.2",
+        image: "./assets/watch9-44.png?v=11.2",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -65,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=10.9.2",
+        image: "./assets/watch-ultra2.png?v=11.2",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -129,34 +129,14 @@
 
   function mediaMap(payload) {
     const map = new Map();
-
-    // v9 영상설정 호환
     for (const item of payload.videos || []) {
       const model = String(item.model || "").trim();
       if (!model) continue;
       map.set(model, {
         enabled: item.enabled === true || String(item.enabled).toUpperCase() === "TRUE",
         type: "video",
-        url: String(item.url || "").trim(),
-        rotationSpeed: "30deg"
+        url: String(item.url || "").trim()
       });
-    }
-
-    // v10 미디어설정이 체크되어 있으면 우선 적용
-    for (const item of payload.media || []) {
-      const model = String(item.model || "").trim();
-      if (!model) continue;
-      const type = String(item.type || "image").trim().toLowerCase();
-      const rotationSpeed = String(item.rotation_speed || item.rotationSpeed || "30deg").trim() || "30deg";
-      const next = {
-        enabled: item.enabled === true || String(item.enabled).toUpperCase() === "TRUE",
-        type,
-        url: String(item.url || "").trim(),
-        rotationSpeed
-      };
-      if (next.enabled || !map.has(model)) {
-        map.set(model, next);
-      }
     }
     return map;
   }
@@ -170,11 +150,7 @@
 
   function productVisual(product, mediaSettings) {
     const setting = mediaSettings.get(product.model);
-    if (!setting || !setting.enabled || !setting.url || setting.type === "image") {
-      return `<img class="product-image" src="${product.image}" alt="${escapeHtml(product.model)}">`;
-    }
-
-    if (setting.type === "video") {
+    if (setting && setting.enabled && setting.url) {
       return `
         <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
         <video
@@ -188,27 +164,6 @@
           aria-label="${escapeHtml(product.model)} 회전 영상"></video>
       `;
     }
-
-    if (setting.type === "3d") {
-      return `
-        <model-viewer
-          class="product-3d"
-          src="${escapeHtml(setting.url)}"
-          poster="${product.image}"
-          alt="${escapeHtml(product.model)} 3D 모델"
-          auto-rotate
-          rotation-per-second="${escapeHtml(setting.rotationSpeed)}"
-          camera-controls
-          interaction-prompt="none"
-          shadow-intensity="0.9"
-          exposure="1"
-          ar="false"
-          disable-pan>
-        </model-viewer>
-        <img class="product-image product-media-fallback" src="${product.image}" alt="${escapeHtml(product.model)}">
-      `;
-    }
-
     return `<img class="product-image" src="${product.image}" alt="${escapeHtml(product.model)}">`;
   }
 
@@ -350,29 +305,7 @@
       }, 5000);
     });
 
-    document.querySelectorAll('.product-3d').forEach((viewer) => {
-      const fallback = viewer.parentElement.querySelector('.product-media-fallback');
-      const showFallback = () => {
-        viewer.style.display = 'none';
-        if (fallback) fallback.style.display = 'block';
-      };
-      const showViewer = () => {
-        viewer.style.display = 'block';
-        if (fallback) fallback.style.display = 'none';
-      };
 
-      const isModelViewerLoaded = !!customElements.get('model-viewer');
-      if (!isModelViewerLoaded) {
-        showFallback();
-        return;
-      }
-
-      viewer.addEventListener('load', showViewer, { once: true });
-      viewer.addEventListener('error', showFallback, { once: true });
-      setTimeout(() => {
-        if (!viewer.loaded) showFallback();
-      }, 4000);
-    });
   }
 
   function setConnectionState(ok, message) {
