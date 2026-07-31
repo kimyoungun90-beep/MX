@@ -45,7 +45,7 @@ body { position:relative; isolation:isolate; }
 
 .dashboard {
   width:100%; height:100%; padding:var(--page-pad); display:grid;
-  grid-template-rows: minmax(82px,9.5vh) minmax(64px,7.5vh) minmax(0,1.42fr) minmax(0,1.08fr);
+  grid-template-rows: minmax(110px,14vh) minmax(0,1.42fr) minmax(0,1.08fr);
   gap: var(--gap);
 }
 .topbar {
@@ -176,7 +176,7 @@ body.layout-portrait .watch-grid .product-summary { grid-template-columns:minmax
 
 @media (orientation: landscape) and (max-height: 850px) {
   :root { --page-pad: 14px; --gap: 10px; }
-  .dashboard { grid-template-rows: 78px 58px minmax(0,1.42fr) minmax(0,1.08fr); }
+  .dashboard { grid-template-rows: 108px minmax(0,1.38fr) minmax(0,1.12fr); }
   .topbar { grid-template-columns:1fr minmax(390px,1.25fr) 1fr; }
   .eyebrow { font-size:20px; }
   .title-wrap h1 { font-size:48px; margin-top:3px; }
@@ -383,7 +383,7 @@ body.layout-portrait .watch-grid .product-summary {
   justify-content: center;
   min-height: 180px;
   border: 1px solid #e8edf5;
-  border-radius: 18px;
+  border-radius: 22px;
   background: rgba(255,255,255,0.72);
   color: #64748b;
   font-weight: 800;
@@ -673,123 +673,3 @@ body::before {
   opacity: 1;
   visibility: visible;
 }
-
-
-/* ===== v12: 사전구매 종료 자동 카운트 배너 ===== */
-.promo-banner {
-  min-height: 0;
-  max-height: 78px;
-  display: grid;
-  grid-template-columns: minmax(330px, .85fr) minmax(0, 1.55fr);
-  align-items: center;
-  gap: clamp(18px, 2vw, 34px);
-  padding: 6px clamp(14px, 1.2vw, 24px);
-  border: 1px solid rgba(120, 140, 176, .22);
-  border-radius: 22px;
-  background: rgba(255,255,255,.94);
-  box-shadow: 0 8px 24px rgba(37,63,105,.08);
-}
-.promo-count-box {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #49384f 0%, #38273f 100%);
-  color: #fff;
-  padding: 5px 16px;
-}
-.promo-kicker {
-  font-size: clamp(12px, .9vw, 17px);
-  font-weight: 800;
-  letter-spacing: .16em;
-  white-space: nowrap;
-}
-.promo-countdown {
-  margin-top: 2px;
-  color: #ffd81f;
-  font-size: clamp(25px, 2.3vw, 40px);
-  font-weight: 950;
-  line-height: 1;
-  letter-spacing: -.04em;
-  white-space: nowrap;
-}
-.promo-copy {
-  min-width: 0;
-  text-align: center;
-  line-height: 1.12;
-}
-.promo-all-new {
-  color: #2d7dff;
-  font-size: clamp(14px, 1vw, 19px);
-  font-weight: 850;
-}
-.promo-products {
-  margin-top: 2px;
-  color: #090d16;
-  font-size: clamp(18px, 1.45vw, 27px);
-  font-weight: 950;
-  letter-spacing: -.035em;
-  white-space: nowrap;
-}
-.promo-ai {
-  margin-top: 2px;
-  color: #575f6e;
-  font-size: clamp(11px, .75vw, 15px);
-  font-weight: 650;
-}
-.promo-period {
-  margin-top: 2px;
-  color: #111827;
-  font-size: clamp(13px, .92vw, 17px);
-  font-weight: 850;
-  white-space: nowrap;
-}
-.promo-banner.is-ended .promo-countdown { color: #fff; }
-
-@media (orientation: landscape) and (max-height: 850px) {
-  .promo-banner {
-    grid-template-columns: minmax(260px, .72fr) minmax(0, 1.55fr);
-    padding: 4px 12px;
-    max-height: 62px;
-    border-radius: 18px;
-  }
-  .promo-count-box { border-radius: 12px; padding: 3px 12px; }
-  .promo-countdown { font-size: 28px; }
-  .promo-products { font-size: 21px; }
-  .promo-period { margin-top: 3px; }
-}
-
-@media (orientation: portrait) {
-  body:not(.layout-landscape) .dashboard,
-  body.layout-portrait .dashboard {
-    grid-template-rows: 112px 118px minmax(0,1.48fr) minmax(0,1.02fr) !important;
-  }
-  .promo-banner {
-    grid-template-columns: minmax(280px,.85fr) minmax(0,1.45fr);
-  }
-  .promo-products { white-space: normal; }
-}
-
-
-/* v12.1 긴급 수정: 배너 때문에 수량 행이 잘리지 않도록 제품 영역 우선 확보 */
-body.layout-landscape .dashboard {
-  grid-template-rows: minmax(76px,9vh) minmax(56px,6.5vh) minmax(0,1.45fr) minmax(0,1.10fr) !important;
-}
-body.layout-landscape .promo-banner {
-  max-height: 64px !important;
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-}
-body.layout-landscape .promo-count-box { padding-top: 3px !important; padding-bottom: 3px !important; }
-body.layout-landscape .promo-kicker { font-size: clamp(11px,.82vw,15px) !important; }
-body.layout-landscape .promo-countdown { font-size: clamp(24px,2vw,34px) !important; }
-body.layout-landscape .promo-products { font-size: clamp(17px,1.35vw,24px) !important; }
-body.layout-landscape .promo-all-new { font-size: clamp(13px,.9vw,17px) !important; }
-body.layout-landscape .promo-ai { font-size: clamp(10px,.7vw,13px) !important; margin-top:0 !important; }
-body.layout-landscape .promo-period { font-size: clamp(12px,.82vw,15px) !important; margin-top:1px !important; }
-body.layout-landscape .phone-grid .card-body { padding-top: 7px !important; padding-bottom: 8px !important; gap: 5px !important; }
-body.layout-landscape .phone-grid .product-summary { min-height: 0 !important; }
-body.layout-landscape .phone-grid .variant-list { margin-top: 0 !important; }
