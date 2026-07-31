@@ -10,7 +10,7 @@
     phones: [
       {
         model: "Galaxy Z Flip8",
-        image: "./assets/flip8.png?v=11.2",
+        image: "./assets/flip8.png?v=12",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -21,7 +21,7 @@
       },
       {
         model: "Galaxy Z Fold8",
-        image: "./assets/fold8.png?v=11.2",
+        image: "./assets/fold8.png?v=12",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -32,7 +32,7 @@
       },
       {
         model: "Galaxy Z Fold8 Ultra",
-        image: "./assets/fold8-ultra.png?v=11.2",
+        image: "./assets/fold8-ultra.png?v=12",
         accent: "#f26395",
         accentRgb: "242, 99, 149",
         variants: [
@@ -45,7 +45,7 @@
     watches: [
       {
         model: "Galaxy Watch9 40mm",
-        image: "./assets/watch9-40.png?v=11.2",
+        image: "./assets/watch9-40.png?v=12",
         accent: "#479aff",
         accentRgb: "71, 154, 255",
         variants: [
@@ -55,7 +55,7 @@
       },
       {
         model: "Galaxy Watch9 44mm",
-        image: "./assets/watch9-44.png?v=11.2",
+        image: "./assets/watch9-44.png?v=12",
         accent: "#ae67ff",
         accentRgb: "174, 103, 255",
         variants: [
@@ -65,7 +65,7 @@
       },
       {
         model: "Galaxy Watch Ultra2",
-        image: "./assets/watch-ultra2.png?v=11.2",
+        image: "./assets/watch-ultra2.png?v=12",
         accent: "#ff9e36",
         accentRgb: "255, 158, 54",
         variants: [
@@ -107,9 +107,34 @@
   const updatedAtEl = document.getElementById("updatedAt");
   const liveBadge = document.getElementById("liveBadge");
   const liveText = document.getElementById("liveText");
+  const promoBannerEl = document.getElementById("promoBanner");
+  const promoCountdownEl = document.getElementById("promoCountdown");
 
   let lastMediaSignature = "";
   let hasRenderedCards = false;
+
+  function updatePromoCountdown() {
+    if (!promoCountdownEl) return;
+
+    // 한국시간 기준. 종료일 당일은 "오늘 종료"로 표시합니다.
+    const now = new Date();
+    const koreaNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    const today = new Date(koreaNow.getFullYear(), koreaNow.getMonth(), koreaNow.getDate());
+    const endDay = new Date(2026, 7, 3); // 2026-08-03
+    const diffDays = Math.ceil((endDay - today) / 86400000);
+
+    let text = "";
+    if (diffDays > 0) {
+      text = `종료 ${diffDays}일 전`;
+    } else if (diffDays === 0) {
+      text = "오늘 종료";
+    } else {
+      text = "행사 종료";
+      promoBannerEl?.classList.add("is-ended");
+    }
+
+    promoCountdownEl.textContent = text;
+  }
 
   function applyLayout() {
     document.body.classList.remove("layout-landscape", "layout-portrait");
@@ -397,6 +422,7 @@
       .replaceAll("'", '&#039;');
   }
 
+  updatePromoCountdown();
   applyLayout();
   let layoutTimer = null;
   const scheduleLayoutUpdate = () => {
@@ -423,4 +449,5 @@
 
   const refreshMs = Math.max(5000, Number(config.REFRESH_MS) || 10000);
   setInterval(refreshStock, refreshMs);
+  setInterval(updatePromoCountdown, 60000);
 })();
